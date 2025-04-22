@@ -3,31 +3,26 @@ package lede;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.Objects;
+
+import static java.lang.String.format;
 
 public class Main {
     private static final Lede lede = new Lede();
-    // Cores atualizadas com melhor contraste
+
     private static final Color COR_PRINCIPAL = new Color(40, 107, 163);
     private static final Color COR_SECUNDARIA = new Color(245, 245, 245);
-    private static final Color COR_BOTAO_ACAO = new Color(65, 142, 200);
-    private static final Color COR_BOTAO_EXIBIR = new Color(30, 90, 150);
     private static final Color COR_TEXTO = new Color(60, 60, 60);
     private static final Color COR_BORDA = new Color(210, 210, 210);
 
-    // Fontes atualizadas
-    private static final Font FONTE_TITULO = new Font("Segoe UI", Font.BOLD, 18);
-    private static final Font FONTE_SUBTITULO = new Font("Segoe UI", Font.BOLD, 14);
-    private static final Font FONTE_NORMAL = new Font("Segoe UI", Font.PLAIN, 13);
-    private static final Font FONTE_BOTOES = new Font("Segoe UI", Font.BOLD, 12);
+    private static final Font FONTE_TITULO = new Font("Segoe UI", Font.BOLD, 24);
+    private static final Font FONTE_SUBTITULO = new Font("Segoe UI", Font.BOLD, 18);
+    private static final Font FONTE_BOTOES = new Font("Segoe UI", Font.BOLD, 16);
 
     private static JTextArea areaSaida;
 
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            // Configurações para melhorar o contraste global
             UIManager.put("TextField.background", Color.WHITE);
             UIManager.put("TextArea.background", Color.WHITE);
         } catch (Exception e) {
@@ -39,24 +34,20 @@ public class Main {
     private static void criarInterface() {
         JFrame frame = new JFrame("LEDE");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(700, 600); // Tamanho um pouco maior
-        frame.setMinimumSize(new Dimension(550, 400));
+        frame.setSize(800, 650);
+        frame.setMinimumSize(new Dimension(600, 450));
         frame.setLocationRelativeTo(null);
 
         JPanel painelPrincipal = new JPanel(new BorderLayout(10, 10));
-        painelPrincipal.setBorder(new EmptyBorder(15, 15, 15, 15));
+        painelPrincipal.setBorder(new EmptyBorder(20, 20, 20, 20));
         painelPrincipal.setBackground(COR_SECUNDARIA);
 
-        // Título com melhor destaque
         JLabel titulo = new JLabel("Lista Estática Duplamente Encadeada (LEDE)", JLabel.CENTER);
         titulo.setFont(FONTE_TITULO);
         titulo.setForeground(COR_PRINCIPAL);
-        titulo.setBorder(new EmptyBorder(0, 0, 10, 0));
+        titulo.setBorder(new EmptyBorder(0, 0, 15, 0));
 
-        // Painel de operações reorganizado
         JPanel painelOperacoes = criarPainelOperacoes();
-
-        // Área de saída com melhor contraste
         JPanel painelSaida = criarPainelSaida();
 
         painelPrincipal.add(titulo, BorderLayout.NORTH);
@@ -72,51 +63,53 @@ public class Main {
         painelOperacoes.setLayout(new BoxLayout(painelOperacoes, BoxLayout.Y_AXIS));
         painelOperacoes.setBorder(criarBordaTitulada("Operações"));
         painelOperacoes.setOpaque(false);
-        painelOperacoes.setAlignmentX(Component.LEFT_ALIGNMENT);
+        painelOperacoes.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel painelCampo = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JPanel painelCampo = new JPanel();
+        painelCampo.setLayout(new BoxLayout(painelCampo, BoxLayout.X_AXIS));
         painelCampo.setOpaque(false);
+        painelCampo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel labelValor = new JLabel("Valor:");
-        labelValor.setFont(FONTE_NORMAL);
+        labelValor.setFont(new Font("Arial", Font.BOLD, 18));
         labelValor.setForeground(COR_TEXTO);
 
         JTextField campoValor = new JTextField(12);
-        campoValor.setFont(FONTE_NORMAL);
-        campoValor.setPreferredSize(new Dimension(120, 20));
+        campoValor.setFont(new Font("Arial", Font.PLAIN, 18));
+        campoValor.setPreferredSize(new Dimension(200, 32));
         campoValor.setMaximumSize(campoValor.getPreferredSize());
 
         painelCampo.add(labelValor);
+        painelCampo.add(Box.createHorizontalStrut(10));
         painelCampo.add(campoValor);
 
-        // Painel para os botões (organizados horizontalmente)
-        JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)); // Espaço entre botões: 10px horizontal, 5px vertical
+        JPanel painelBotoes = new JPanel(new GridLayout(0, 2, 10, 10));
         painelBotoes.setOpaque(false);
+        painelBotoes.setMaximumSize(new Dimension(400, Integer.MAX_VALUE));
+        painelBotoes.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Criar botões
-        JButton btnIncluir = criarBotao("Incluir", 100, 30);
-        JButton btnInicioFim = criarBotao("Exibir início → fim", 150, 30);
-        JButton btnFimInicio = criarBotao("Exibir fim → início", 150, 30);
-        JButton btnInverter = criarBotao("Inverter lista", 120, 30);
+        JButton btnIncluir = criarBotao("Incluir");
+        JButton btnInicioFim = criarBotao("Exibir início → fim");
+        JButton btnFimInicio = criarBotao("Exibir fim → início");
+        JButton btnInverter = criarBotao("Inverter lista");
+        JButton btnRemover = criarBotao("Remover por índice");
 
-        // Adicionar botões ao painel horizontal
         painelBotoes.add(btnIncluir);
+        painelBotoes.add(btnRemover);
         painelBotoes.add(btnInicioFim);
         painelBotoes.add(btnFimInicio);
         painelBotoes.add(btnInverter);
 
-        // Adicionar componentes ao painel principal
         painelOperacoes.add(painelCampo);
+        painelOperacoes.add(Box.createVerticalStrut(20));
         painelOperacoes.add(painelBotoes);
 
-        // Configuração dos listeners (mantida igual)
-        btnIncluir.addActionListener((ActionEvent e) -> {
+        btnIncluir.addActionListener(_ -> {
             String texto = campoValor.getText().trim();
             if (texto.isEmpty()) {
                 mostrarErro("Digite um valor para incluir na lista.");
                 return;
             }
-
             try {
                 int valor = Integer.parseInt(texto);
                 lede.incluir(valor);
@@ -125,20 +118,35 @@ public class Main {
                 mostrarInfo(valor + " incluído na lista.");
             } catch (NumberFormatException ex) {
                 mostrarErro("Valor inválido. Use apenas números inteiros.");
+            } catch (IndexOutOfBoundsException exception) {
+                mostrarErro("Lista já está cheia (10 elementos).");
             }
         });
 
-        btnInicioFim.addActionListener(e -> {
-            areaSaida.setText(lede.exibirInicioAoFim());
-        });
-
-        btnFimInicio.addActionListener(e -> {
-            areaSaida.setText(lede.exibirFimAoInicio());
-        });
-
-        btnInverter.addActionListener(e -> {
+        btnInicioFim.addActionListener(_ -> areaSaida.setText(lede.exibirInicioAoFim()));
+        btnFimInicio.addActionListener(_ -> areaSaida.setText(lede.exibirFimAoInicio()));
+        btnInverter.addActionListener(_ -> {
             lede.inverterOrdem();
             mostrarInfo("Ordem da lista invertida com sucesso.");
+        });
+
+        btnRemover.addActionListener(_ -> {
+            String texto = campoValor.getText().trim();
+            if (texto.isEmpty()) {
+                mostrarErro("Digite o índice a ser removido da lista.");
+                return;
+            }
+            try {
+                int valor = Integer.parseInt(texto);
+                lede.remover(valor);
+                campoValor.setText("");
+                campoValor.requestFocus();
+                mostrarInfo(format("Índice %d removido da lista.", valor));
+            } catch (NumberFormatException ex) {
+                mostrarErro("Valor inválido. Use apenas números inteiros.");
+            } catch (IndexOutOfBoundsException ex) {
+                mostrarErro("Índice não existe na lista.");
+            }
         });
 
         return painelOperacoes;
@@ -149,15 +157,15 @@ public class Main {
         painelSaida.setBorder(criarBordaTitulada("Resultado"));
         painelSaida.setOpaque(false);
 
-        areaSaida = new JTextArea(12, 40);
-        areaSaida.setFont(new Font("Consolas", Font.PLAIN, 14));
+        areaSaida = new JTextArea(5, 40);
+        areaSaida.setFont(new Font("Monospaced", Font.PLAIN, 18));
         areaSaida.setEditable(false);
         areaSaida.setBackground(Color.WHITE);
+        areaSaida.setForeground(COR_TEXTO);
         areaSaida.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(COR_BORDA),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+                BorderFactory.createEmptyBorder(8, 8, 8, 8)
         ));
-        areaSaida.setForeground(COR_TEXTO);
 
         JScrollPane scroll = new JScrollPane(areaSaida);
         scroll.setBorder(null);
@@ -166,29 +174,25 @@ public class Main {
         return painelSaida;
     }
 
-    private static JButton criarBotao(String texto, int largura, int altura) {
+    private static JButton criarBotao(String texto) {
         JButton botao = new JButton(texto);
         botao.setFont(FONTE_BOTOES);
         botao.setForeground(COR_TEXTO);
         botao.setFocusPainted(false);
         botao.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        botao.setPreferredSize(new Dimension(largura, altura));
-        botao.setMaximumSize(new Dimension(largura, altura));
-
+        botao.setPreferredSize(new Dimension(180, 40));
+        botao.setMaximumSize(new Dimension(180, 40));
         return botao;
     }
 
     private static TitledBorder criarBordaTitulada(String titulo) {
-        TitledBorder borda = BorderFactory.createTitledBorder(
+        return BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(COR_BORDA, 1),
                 titulo,
                 TitledBorder.LEFT,
                 TitledBorder.TOP,
                 FONTE_SUBTITULO,
                 COR_PRINCIPAL);
-        borda.setTitlePosition(TitledBorder.TOP);
-        borda.setTitleJustification(TitledBorder.LEFT);
-        return borda;
     }
 
     private static void mostrarErro(String msg) {

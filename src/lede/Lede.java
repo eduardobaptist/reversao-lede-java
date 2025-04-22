@@ -6,12 +6,14 @@ import static java.util.Objects.isNull;
 
 public class Lede {
 
-    private Integer inicio = null;
-    private Integer fim = null;
+    private Integer inicio;
+    private Integer fim;
     public ArrayList<Elemento> lista;
 
     public Lede() {
         this.inicio = null;
+        this.fim = null;
+
         this.lista = new ArrayList<>(10);
     }
 
@@ -33,7 +35,7 @@ public class Lede {
                 //nesse momento, "atual" é o primeiro maior valor que o valor do novo elemento
 
                 this.lista.add(new Elemento(valor));
-                Integer novo = this.lista.size() - 1;
+                int novo = this.lista.size() - 1;
 
                 if (anterior == null) {
                     // anterior nao foi alimentado no while, porque nao achou nenhum valor na lista que seja menor que o valor novo, então ele é o primeiro
@@ -59,6 +61,8 @@ public class Lede {
                     this.fim = novo;
                 }
             }
+        } else {
+            throw new IndexOutOfBoundsException();
         }
     }
 
@@ -72,9 +76,9 @@ public class Lede {
             Elemento item = this.lista.get(atual);
 
             if (isNull(item.proximo)) {
-                txt.append(String.format("[%s]", item.valor));
+                txt.append(String.format("[%d]", item.valor));
             } else {
-                txt.append(String.format("[%s] -> ", item.valor));
+                txt.append(String.format("[%d] -> ", item.valor));
             }
 
             atual = item.proximo;
@@ -93,9 +97,9 @@ public class Lede {
             Elemento item = this.lista.get(atual);
 
             if (isNull(item.anterior)) {
-                txt.append(String.format("[%s]", item.valor));
+                txt.append(String.format("[%d]", item.valor));
             } else {
-                txt.append(String.format("[%s] -> ", item.valor));
+                txt.append(String.format("[%d] -> ", item.valor));
             }
 
             atual = item.anterior;
@@ -120,6 +124,35 @@ public class Lede {
         this.fim = inicio;
     }
 
+    public void remover(Integer indice) {
+        Elemento itemRemover  = this.lista.get(indice);
+
+        Integer itemAnterior = itemRemover.anterior;
+        Integer itemProximo = itemRemover.proximo;
+
+        if (indice.equals(this.inicio)) {
+            // item removido é o primeiro, então o início é o próximo do que era o primeiro
+            this.inicio = itemProximo;
+        }
+
+        if (indice.equals(this.fim)) {
+            // item removido é o último, então o fim é o anterior do que era o último
+            this.fim = itemAnterior;
+        }
+
+        if (!isNull(itemAnterior)) {
+            // próximo do anterior do que é removido agora é o que era o próximo dele
+            this.lista.get(itemAnterior).proximo = itemProximo;
+        }
+
+        if (!isNull(itemProximo)) {
+            // anterior do próximo do que é removido agora é o que era o anterior dele
+            this.lista.get(itemProximo).anterior = itemAnterior;
+        }
+
+        this.lista.remove((int) indice);
+    }
+
     @Override
     public String toString() {
         return "lede.Lede{" +
@@ -129,7 +162,7 @@ public class Lede {
                 "\n}";
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Lede lede = new Lede();
 
 
@@ -143,5 +176,6 @@ public class Lede {
         System.out.println(lede);
         lede.exibirInicioAoFim();
         lede.exibirFimAoInicio();
-    }
+        lede.remover(1);
+    }*/
 }
