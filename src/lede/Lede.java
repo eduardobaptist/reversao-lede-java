@@ -140,6 +140,7 @@ public class Lede {
             this.fim = itemAnterior;
         }
 
+        
         if (!isNull(itemAnterior)) {
             // próximo do anterior do que é removido agora é o que era o próximo dele
             this.lista.get(itemAnterior).proximo = itemProximo;
